@@ -14,9 +14,9 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.Properties;
 
-public class StreamsStarterApp {
+public class WordCountApp {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(StreamsStarterApp.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WordCountApp.class);
 
     public static void main(String[] args) {
         Properties config = new Properties();
