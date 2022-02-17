@@ -20,3 +20,13 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+jar {
+    manifest.attributes 'Main-Class': 'com.claudiodornelles.kafka.streams.WordCountApp'
+    duplicatesStrategy = 'include'
+    from sourceSets.main.output
+    dependsOn configurations.runtimeClasspath
+    from {
+        configurations.runtimeClasspath.findAll { it.name.endsWith('.jar') }.collect { zipTree(it) }
+    }
+}
