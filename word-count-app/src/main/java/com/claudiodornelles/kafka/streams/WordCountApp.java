@@ -5,18 +5,16 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.kafka.streams.kstream.Produced;
 
 import java.util.Arrays;
 import java.util.Properties;
 
 public class WordCountApp {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(WordCountApp.class);
 
     public static void main(String[] args) {
         Properties config = new Properties();
@@ -26,6 +24,16 @@ public class WordCountApp {
         config.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         config.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
 
+        WordCountApp app = new WordCountApp();
+
+        try (KafkaStreams streams = new KafkaStreams(app.getTopology(), config)) {
+            streams.start();
+            Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
+        }
+
+    }
+
+    public Topology getTopology() {
         StreamsBuilder builder = new StreamsBuilder();
 
         KStream<String, String> wordCountInput = builder.stream("word-count-input");
@@ -35,13 +43,8 @@ public class WordCountApp {
                 .groupByKey()
                 .count(Materialized.as("Counts"));
 
-        wordCounts.toStream().to("word-count-output");
+        wordCounts.toStream().to("word-count-output", Produced.with(Serdes.String(), Serdes.Long()));
 
-        KafkaStreams streams = new KafkaStreams(builder.build(), config);
-        streams.start();
-        LOGGER.info(streams.toString());
-
-        Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
-
+        return builder.build();
     }
 }
