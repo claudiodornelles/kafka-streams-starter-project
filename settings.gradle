@@ -1,2 +1,4 @@
 rootProject.name = 'kafka-streams-starter-project'
+include 'favorite-colour-app'
+include 'word-count-app'
 
