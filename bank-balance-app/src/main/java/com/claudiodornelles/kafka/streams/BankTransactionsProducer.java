@@ -55,7 +55,7 @@ public class BankTransactionsProducer {
                                     metadata.topic(),
                                     metadata.partition(),
                                     metadata.offset());
-                        }).get();
+                        });
                         Thread.sleep(2000);
                     }
                     i++;
