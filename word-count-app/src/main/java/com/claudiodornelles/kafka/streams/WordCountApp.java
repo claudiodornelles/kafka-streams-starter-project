@@ -37,6 +37,7 @@ public class WordCountApp {
         StreamsBuilder builder = new StreamsBuilder();
 
         KStream<String, String> wordCountInput = builder.stream("word-count-input");
+
         KTable<String, Long> wordCounts = wordCountInput.mapValues(textLine -> textLine.toLowerCase())
                 .flatMapValues(lowerCaseTextLine -> Arrays.asList(lowerCaseTextLine.split(" ")))
                 .selectKey((key, value) -> value)
